@@ -13,7 +13,7 @@ const PROFILE = {
   name: "Herimampionona SAMBIZARA",
   roles: ["Développeur Fullstack", "Designer UI/UX", "Créateur de solutions web"],
   bio: "Je suis un développeur web passionné par la création de solutions numériques à la fois fonctionnelles, élégantes et efficaces. J'aime transformer des idées complexes en outils simples à utiliser, en combinant rigueur technique, créativité visuelle et sens du détail. Mon objectif est de concevoir des applications performantes, modernes et adaptées aux besoins réels des utilisateurs et des entreprises.",
-  cvUrl: "#",
+  cvUrl: "/CV_herimampionona.pdf.pdf",
   social: {
     linkedin: "https://www.linkedin.com/in/herimampionona-sambizara-57575a406/",
     whatsapp: "https://wa.me/261388752956",
@@ -67,7 +67,7 @@ const PROJECTS = [
   {
     title: "PharmaStock - Gestion de stockage des medicaments",
     description: "Application de gestion pharmaceutique conçue pour organiser le stockage des médicaments, suivre les mouvements et améliorer la traçabilité des produits.",
-    tags: ["Next.js", "Nest.js", "Dashboard"],
+    tags: ["Next.js", "Nest.js", "PostgreSQL", "Tailwind CSS"],
     image: "/pharma.png",
     gradient: "linear-gradient(135deg, #ec4899, #7c3aed)",
     link: "https://github.com/sambizara/",
@@ -75,7 +75,7 @@ const PROJECTS = [
   {
     title: "GRH - Gestion et suivi du personnel",
     description: "Application de gestion destinée à suivre les employés, organiser les informations du personnel et faciliter la gestion administrative au quotidien.",
-    tags: ["React JS", "Node.js", "Analytics"],
+    tags: ["React JS", "Node.js", "MongoDB", "Tailwind CSS"],
     image: "/dash_admin.png",
     gradient: "linear-gradient(135deg, #06b6d4, #3b82f6)",
     link: "https://github.com/sambizara/",
@@ -86,12 +86,12 @@ const PROJECTS = [
     tags: ["Vite", "React", "Portfolio"],
     image: "/mon_porfolio.png",
     gradient: "linear-gradient(135deg, #f59e0b, #ef4444)",
-    link: "https://github.com/sambizara/",
+    link: "https://herimampionona-sambizara.vercel.app/",
   },
   {
     title: "Pulse - Messagerie Instantanée",
     description: "Plateforme de messagerie instantanée avec conversations privées et de groupe, présence en temps réel, indicateur de frappe, accusés de lecture et partage de fichiers jusqu'à 10 Mo.",
-    tags: ["Next.js", "TypeScript", "Socket.io", "Node.js", "Tailwind CSS"],
+    tags: ["Next.js", "TypeScript", "Socket.io", "Node.js", "MongoDB", "Tailwind CSS"],
     image: "/Pulse.png",
     gradient: "linear-gradient(135deg, #6366f1, #a855f7)",
     link: "https://pulse-ashen-eight.vercel.app/",
