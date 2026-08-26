@@ -2,16 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import {
   Linkedin, Github, Mail, MessageCircle, Facebook, Download,
   Menu, X, ThumbsUp, Heart, Frown, Angry, Smile, ChevronRight,
-  Sun, Moon
+  Sun, Moon, ExternalLink
 } from "lucide-react";
 import { SkillCarousel } from "./SkillCarousel";
-
-/* ============================================================
-   PORTFOLIO — à personnaliser
-   Remplace les valeurs dans PROFILE, SKILLS, PROJECTS, REVIEWS_SEED
-   par tes propres informations. Le design (couleurs, mise en page)
-   n'a pas besoin d'être touché sauf si tu veux changer le style.
-   ============================================================ */
+import { supabase } from "../supabaseClient";
 
 const PROFILE = {
   initials: "HS",
@@ -21,7 +15,7 @@ const PROFILE = {
   bio: "Je suis un développeur web passionné par la création de solutions numériques à la fois fonctionnelles, élégantes et efficaces. J'aime transformer des idées complexes en outils simples à utiliser, en combinant rigueur technique, créativité visuelle et sens du détail. Mon objectif est de concevoir des applications performantes, modernes et adaptées aux besoins réels des utilisateurs et des entreprises.",
   cvUrl: "#",
   social: {
-    linkedin: "#",
+    linkedin: "https://www.linkedin.com/in/herimampionona-sambizara-57575a406/",
     whatsapp: "https://wa.me/261388752956",
     email: "mailto:sambizarahenri@gmail.com",
     github: "https://github.com/sambizara/",
@@ -33,6 +27,7 @@ const PROFILE = {
 const SKILL_CATEGORIES = ["Frontend", "Backend", "Base de données", "Outils"];
 
 const DEVICON = (slug, variant = "original") => `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${slug}/${slug}-${variant}.svg`;
+const SIMPLE_ICON = (slug, hex = "ffffff") => `https://cdn.simpleicons.org/${slug}/${hex}`;
 
 const SKILLS = {
   Frontend: [
@@ -49,7 +44,6 @@ const SKILLS = {
     { name: "Express.js", logo: DEVICON("express", "original-wordmark"), bg: "#ffffff" },
     { name: "Nest JS", logo: DEVICON("nestjs"), bg: "#ffffff" },
     { name: "PHP", logo: DEVICON("php"), bg: "#ffffff" },
-    { name: "Python", logo: DEVICON("python"), bg: "#ffffff" },
     { name: "Prisma", logo: DEVICON("prisma"), bg: "#ffffff" },
   ],
   "Base de données": [
@@ -60,6 +54,8 @@ const SKILLS = {
   Outils: [
     { name: "Git", logo: DEVICON("git"), bg: "#ffffff" },
     { name: "GitHub", logo: DEVICON("github", "original"), bg: "#ffffff" },
+    { name: "Vercel", logo: DEVICON("vercel", "original"), bg: "#ffffff" },
+    { name: "Render", logo: SIMPLE_ICON("render", "000000"), bg: "#ffffff" },
     { name: "Docker", logo: DEVICON("docker"), bg: "#ffffff" },
     { name: "Postman", logo: DEVICON("postman"), bg: "#ffffff" },
     { name: "Figma", logo: DEVICON("figma"), bg: "#ffffff" },
@@ -74,6 +70,7 @@ const PROJECTS = [
     tags: ["Next.js", "Nest.js", "Dashboard"],
     image: "/pharma.png",
     gradient: "linear-gradient(135deg, #ec4899, #7c3aed)",
+    link: "https://github.com/sambizara/",
   },
   {
     title: "GRH - Gestion et suivi du personnel",
@@ -81,6 +78,7 @@ const PROJECTS = [
     tags: ["React JS", "Node.js", "Analytics"],
     image: "/dash_admin.png",
     gradient: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+    link: "https://github.com/sambizara/",
   },
   {
     title: "Mon Portfolio",
@@ -88,13 +86,15 @@ const PROJECTS = [
     tags: ["Vite", "React", "Portfolio"],
     image: "/mon_porfolio.png",
     gradient: "linear-gradient(135deg, #f59e0b, #ef4444)",
+    link: "https://github.com/sambizara/",
   },
   {
-    title: "Analyse des paquets",
-    description: "Outil de surveillance réseau développé en Python avec Scapy pour capturer les paquets, identifier les protocoles et produire des statistiques réseau utiles.",
-    tags: ["Python", "Scapy", "Réseau"],
-    image: "/analys_paquets.png",
-    gradient: "linear-gradient(135deg, #22c55e, #0ea5e9)",
+    title: "Pulse - Messagerie Instantanée",
+    description: "Plateforme de messagerie instantanée avec conversations privées et de groupe, présence en temps réel, indicateur de frappe, accusés de lecture et partage de fichiers jusqu'à 10 Mo.",
+    tags: ["Next.js", "TypeScript", "Socket.io", "Node.js", "Tailwind CSS"],
+    image: "/Pulse.png",
+    gradient: "linear-gradient(135deg, #6366f1, #a855f7)",
+    link: "https://pulse-ashen-eight.vercel.app/",
   },
 ];
 
@@ -134,6 +134,17 @@ export default function Portfolio() {
   const [formError, setFormError] = useState("");
   const [visibleSections, setVisibleSections] = useState({});
   const isDark = theme === "dark";
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      const { data, error } = await supabase
+        .from("avis")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!error && data) setReviews(data);
+    };
+    fetchReviews();
+  }, []);
 
   useEffect(() => {
     const sections = Object.entries(sectionRefs.current).filter(([_, el]) => el);
@@ -192,15 +203,18 @@ export default function Portfolio() {
     sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const submitReview = (e) => {
+  const submitReview = async (e) => {
     e.preventDefault();
     if (!form.name.trim() || !form.role.trim() || !form.comment.trim()) {
       setFormError("Merci de remplir tous les champs.");
       return;
     }
     setFormError("");
-    setReviews((r) => [{ ...form }, ...r]);
-    setForm({ name: "", role: "", comment: "", reaction: "love" });
+    const { data, error } = await supabase.from("avis").insert([form]).select();
+    if (!error && data) {
+      setReviews((r) => [data[0], ...r]);
+      setForm({ name: "", role: "", comment: "", reaction: "love" });
+    }
   };
 
   const reactionCounts = REACTIONS.map((r) => ({
@@ -373,7 +387,7 @@ export default function Portfolio() {
       {/* Carrousel infini des compétences */}
       <div className="max-w-6xl mx-auto px-6 py-16">
         <p className="text-center text-sm mb-8" style={{ color: "#a1a1aa" }}>Et beaucoup d'autres technologies...</p>
-        <SkillCarousel />
+        <SkillCarousel isDark={isDark} />
       </div>
 
       {/* A PROPOS */}
@@ -402,7 +416,9 @@ export default function Portfolio() {
             {SKILLS[skillTab].map((s) => (
               <div key={s.name} className="hover-lift flex flex-col items-center justify-center gap-3 p-4 sm:p-6 rounded-xl"
                 style={{ background: isDark ? "#151220" : "#ffffff", width: "120px", height: "120px", border: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(17,24,39,0.08)" }}>
-                <img src={s.logo} alt={s.name} className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 p-2 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                  <img src={s.logo} alt={s.name} className="w-full h-full object-contain" />
+                </div>
                 <span className="text-xs sm:text-sm text-center font-medium" style={{ color: isDark ? "#d4d4d8" : "#374151" }}>{s.name}</span>
               </div>
             ))}
@@ -415,15 +431,29 @@ export default function Portfolio() {
         <h2 className="text-2xl font-bold mb-10 text-center tracking-wide">PROJETS</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {PROJECTS.map((p, i) => (
-            <div key={i} className="hover-lift rounded-xl overflow-hidden border" style={{ borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(17,24,39,0.08)", background: isDark ? "#120f1c" : "#ffffff", boxShadow: isDark ? "0 18px 40px rgba(0,0,0,0.18)" : "0 18px 40px rgba(15,23,42,0.06)" }}>
-              {p.image ? (
-                <img src={p.image} alt={p.title} className="w-full h-48 object-cover" />
-              ) : (
-                <div className="h-48" style={{ background: p.gradient }} />
-              )}
-              <div className="p-4">
-                <h3 className="font-semibold mb-1" style={{ color: isDark ? "#f5f5f7" : "#111827" }}>{p.title}</h3>
-                <p className="text-xs mb-3" style={{ color: isDark ? "#a1a1aa" : "#4b5563" }}>{p.description}</p>
+            <a
+              key={i}
+              href={p.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover-lift rounded-xl overflow-hidden border flex flex-col justify-between group transition-transform"
+              style={{ borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(17,24,39,0.08)", background: isDark ? "#120f1c" : "#ffffff", boxShadow: isDark ? "0 18px 40px rgba(0,0,0,0.18)" : "0 18px 40px rgba(15,23,42,0.06)" }}
+            >
+              <div>
+                {p.image ? (
+                  <img src={p.image} alt={p.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+                ) : (
+                  <div className="h-48" style={{ background: p.gradient }} />
+                )}
+                <div className="p-4">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <h3 className="font-semibold text-sm group-hover:text-pink-500 transition-colors" style={{ color: isDark ? "#f5f5f7" : "#111827" }}>{p.title}</h3>
+                    <ExternalLink size={14} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0" style={{ color: "#ec4899" }} />
+                  </div>
+                  <p className="text-xs mb-3" style={{ color: isDark ? "#a1a1aa" : "#4b5563" }}>{p.description}</p>
+                </div>
+              </div>
+              <div className="p-4 pt-0">
                 <div className="flex flex-wrap gap-1.5">
                   {p.tags.map((t) => (
                     <span key={t} className="text-[10px] px-2 py-0.5 rounded-full border" style={{ borderColor: "#ec4899", color: isDark ? "#f9a8d4" : "#9d174d", background: isDark ? "rgba(236,72,153,0.05)" : "rgba(236,72,153,0.06)" }}>
@@ -432,7 +462,7 @@ export default function Portfolio() {
                   ))}
                 </div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </section>
