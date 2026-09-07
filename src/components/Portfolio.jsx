@@ -13,7 +13,7 @@ const PROFILE = {
   name: "Herimampionona SAMBIZARA",
   roles: ["Développeur Fullstack", "Designer UI/UX", "Créateur de solutions web"],
   bio: "Je suis un développeur web passionné par la création de solutions numériques à la fois fonctionnelles, élégantes et efficaces. J'aime transformer des idées complexes en outils simples à utiliser, en combinant rigueur technique, créativité visuelle et sens du détail. Mon objectif est de concevoir des applications performantes, modernes et adaptées aux besoins réels des utilisateurs et des entreprises.",
-  cvUrl: "/CV_herimampionona.pdf.pdf",
+  cvUrl: "/CV_herimampionona.pdf",
   social: {
     linkedin: "https://www.linkedin.com/in/herimampionona-sambizara-57575a406/",
     whatsapp: "https://wa.me/261388752956",
